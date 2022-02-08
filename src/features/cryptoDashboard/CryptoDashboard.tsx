@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { FormEvent, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import styles from './CryptoDashboard.module.css';
+import { useAppDispatch } from '../../app/hooks';
+import { changePairAsync } from './cryptoDashboardSlice';
 
 const actualInfo = [{
   title: 'Pair',
@@ -15,7 +17,13 @@ const actualInfo = [{
 }];
 
 export default function CryptoDashboard() {
-  const onSubmit = () => {}
+  const [pair, setPair] = useState('');
+  const dispatch = useAppDispatch();
+  
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    dispatch(changePairAsync(pair));
+  }
   
   const actualInfoTable = (
     actualInfo.map((row) => {
@@ -37,6 +45,7 @@ export default function CryptoDashboard() {
             label="Search pair" 
             placeholder="E.g. BTC/USD" 
             size="small"
+            onChange={(event) => setPair(event.target.value)}
           />
           <Button type="submit" variant="contained">Subscribe</Button>
         </form>
