@@ -1,0 +1,41 @@
+.cryptoDashboard {
+  margin: 10px auto;
+  max-width: 50%;
+}
+
+.subscribeContainer {
+  display: flex;
+}
+
+.subscribeForm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.actualInfoContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.actualInfoTable {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.actualInfoItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.chart {
+  width: 100%;
+  height: 350px;
+  background-color: lightblue;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

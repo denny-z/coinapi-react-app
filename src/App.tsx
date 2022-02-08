@@ -1,10 +1,11 @@
 import React from 'react';
 import './App.css';
+import CryptoDashboard from './features/cryptoDashboard/CryptoDashboard';
 
 function App() {
   return (
     <div>
-      <h1>Hello world!</h1>
+      <CryptoDashboard />
     </div>
   );
 }
