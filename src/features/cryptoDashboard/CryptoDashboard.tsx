@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import styles from './CryptoDashboard.module.css';
 import { useAppDispatch } from '../../app/hooks';
 import { changePairAsync } from './cryptoDashboardSlice';
+import CandleChart from './components/CandleChart';
 
 const actualInfo = [{
   title: 'Pair',
@@ -58,8 +59,7 @@ export default function CryptoDashboard() {
       </div>
       <div className={styles.chartContainer}>
         <h2>Charting Data</h2>
-
-        <p className={styles.chart}>This is chart.</p>
+        <CandleChart />
       </div>
     </div>
   )

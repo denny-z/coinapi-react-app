@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 import { fetchHistory, HistoryRequest } from './cryptoDashboardAPI';
 
 interface MarketData {
@@ -18,6 +19,8 @@ const initialState: CryptoDashboardState = {
   marketData: null,
 };
 
+// TODO: Add error handling.
+// TODO: Add websocket destroy and subscription.
 export const changePairAsync = createAsyncThunk(
   'cryptoDashboard/changePairAsync',
   async (newPair: string) => {
@@ -29,10 +32,10 @@ export const changePairAsync = createAsyncThunk(
     // TODO: Use a variable instead of magic string.
     const period = '1HRS';
 
-    const TEN_HOURS_IN_MS = 10 * 60 * 60 * 1000;
+    const HOURS_20_IN_MS = 20 * 60 * 60 * 1000;
     const currentMs = Date.now();
     const endDate = new Date(currentMs);
-    const startDate = new Date(currentMs - TEN_HOURS_IN_MS);
+    const startDate = new Date(currentMs - HOURS_20_IN_MS);
 
     const request: HistoryRequest = {
       leftAsset,
@@ -60,3 +63,21 @@ const slice = createSlice({
 });
 
 export default slice.reducer;
+
+export interface ChartData {
+  x: Date,
+  y: [number, number, number, number]
+}
+
+export const selectChartDataFormatted = (state: RootState): Array<ChartData> => {
+  if (!state.cryptoDashboard.chartData) return [];
+  
+  return state.cryptoDashboard.chartData.map(
+    (item) => {
+      const formattedItem: ChartData = {
+        x: item.time_open,
+        y: [item.rate_open, item.rate_high, item.rate_low, item.rate_close],
+      }
+      return formattedItem;
+    });
+}
