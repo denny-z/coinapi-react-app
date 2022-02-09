@@ -4,13 +4,16 @@ const API_KEYS = [
   '69B52375-8F65-49C3-B485-A234D54F9181',
   'C00C804D-6A34-4DDB-B59D-2884162714FD',
 ];
-let currentApiKeyIndex = 0;
+let currentFetchApiKeyIndex = 0;
+let currentWsApiKeyIndex = 0;
+let socketReopenCount = 0;
 
 const EXCHANGE_BASE_URL = 'https://rest.coinapi.io/v1/exchangerate';
 
 const EXCHANGE_WS_URL = 'wss://ws-sandbox.coinapi.io/v1/';
 
 const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
+const WS_CODE_POLICY_VIOLATION = 1008;
 
 function buildHistoryUrl(request: HistoryRequest): string {
   const params = new URLSearchParams();
@@ -28,12 +31,12 @@ export async function fetchHistory(request: HistoryRequest): Promise<any> {
     const fetchResult = await fetch(url, {
       method: 'GET',
       headers: {
-        'X-CoinAPI-Key': API_KEYS[currentApiKeyIndex]
+        'X-CoinAPI-Key': API_KEYS[currentFetchApiKeyIndex]
       }
     });
 
-    if (fetchResult.status === HTTP_STATUS_TOO_MANY_REQUESTS && currentApiKeyIndex < API_KEYS.length - 1) {
-      currentApiKeyIndex++;
+    if (fetchResult.status === HTTP_STATUS_TOO_MANY_REQUESTS && currentFetchApiKeyIndex < API_KEYS.length - 1) {
+      currentFetchApiKeyIndex++;
       return fetchHistory(request);
     }
 
@@ -48,7 +51,6 @@ let exchangeSocket: WebSocket;
 
 const wsHelloMessageTemplate = {
   type: 'hello',
-  apikey: API_KEYS[currentApiKeyIndex],
   subscribe_data_type: ['exrate'],
   subscribe_update_limit_ms_exrate: 1000,
 };
@@ -56,8 +58,9 @@ const wsHelloMessageTemplate = {
 function prepareWsHelloMessage(pair: Pair) {
   return {
     ...wsHelloMessageTemplate,
-    subscribe_filter_asset_id: [`${pair.left}/${pair.right}`]
-  }
+    apikey: API_KEYS[currentWsApiKeyIndex],
+    subscribe_filter_asset_id: [`${pair.left}/${pair.right}`],
+  };
 }
 
 export function subscribeToMarketData(
@@ -65,33 +68,47 @@ export function subscribeToMarketData(
   onUpdate: (m: MarketData) => void,
   onError: () => void
 ): void {
-  if (exchangeSocket) {
-    exchangeSocket.close();
+  if (exchangeSocket && exchangeSocket.readyState === WebSocket.OPEN) {
+    const helloMessage = prepareWsHelloMessage(pair);
+    exchangeSocket.send(JSON.stringify(helloMessage));
+    return;
   }
 
   const socket = new WebSocket(EXCHANGE_WS_URL);
 
   socket.onopen = () => {
     const helloMessage = prepareWsHelloMessage(pair);
-    socket.send(JSON.stringify(helloMessage));
+    exchangeSocket.send(JSON.stringify(helloMessage));
+    console.info('Socket opened');
   };
 
-  // TODO: Add websocket event type. See gist: https://gist.github.com/QuadFlask/a8d50095dea9cfa3f056c07b796e7c95#file-websocket-d-ts-L63
-  socket.onmessage = (event: any) => {
+  // TODO: Fix endless "Loading..." state when not available pair provided (e.g. "FIL/ETH") - no messages sent.
+  socket.onmessage = (event: MessageEvent) => {
     const data = JSON.parse(event.data.toString());
+    if (data.type === 'error') return;
+
     const marketData: MarketData = {
       price: data.rate,
       date: data.time,
     };
     onUpdate(marketData);
+    socketReopenCount = 0;
   };
 
-  socket.onerror = (event: any) => {
-    onError();
-  }
+  socket.onerror = onError;
 
-  socket.onclose = () => {
-    console.warn('Socket is closed');
+  socket.onclose = (event: CloseEvent) => {
+    if (event.code === WS_CODE_POLICY_VIOLATION && socketReopenCount < API_KEYS.length - 1) {
+      console.info('Reopening socket due to policy violation...');
+
+      socketReopenCount++;
+      if (++currentWsApiKeyIndex > API_KEYS.length - 1) currentWsApiKeyIndex = 0;
+
+      subscribeToMarketData(pair, onUpdate, onError);
+    } else {
+      console.warn('Socket closed');
+      onError();
+    }
   }
 
   exchangeSocket = socket;
