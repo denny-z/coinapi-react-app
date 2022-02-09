@@ -45,8 +45,8 @@ export default function CandleChart() {
     case 'error':
       status = (<h4>Sorry, something went wrong...</h4>)
       break;
-    case 'loaded': 
-      status = (<h5>Fluctuations for past 10 hours.</h5>);
+    case 'loaded':
+      status = (<h5>Fluctuations for past ~24 hours.</h5>); // See also [period selector].
       break;
   }
 

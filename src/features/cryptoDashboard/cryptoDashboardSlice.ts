@@ -29,15 +29,15 @@ export const changePairAsync = createAsyncThunk(
 
     dispatch(changePair(pair));
 
-    // IDEA: Add selector to be able to select period. 
+    // IDEA: Add selector to be able to select period. [period-selector]
     //   If so, calculate start/end date to get some amount of data.
     // TODO: Use a variable instead of magic string.
     const period = '1HRS';
 
-    const HOURS_20_IN_MS = 20 * 60 * 60 * 1000;
+    const HOURS_24_IN_MS = 24 * 60 * 60 * 1000;
     const currentMs = Date.now();
     const endDate = new Date(currentMs);
-    const startDate = new Date(currentMs - HOURS_20_IN_MS);
+    const startDate = new Date(currentMs - HOURS_24_IN_MS);
 
     const request: HistoryRequest = {
       leftAsset,
