@@ -13,7 +13,7 @@ export default function CryptoDashboard() {
       </div>
 
       <div className={styles.chartContainer}>
-        <h2>Historical exchange reates</h2>
+        <h2>Exchange rates</h2>
         <CandleChart />
       </div>
     </>
