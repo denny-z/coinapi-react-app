@@ -1,5 +1,3 @@
-import { MarketData, Pair } from './cryptoDashboardSlice';
-
 // TODO: Move the constants below to env file.
 const API_KEYS = [
   '3CFD5F1E-EDAF-4F44-9F87-E9E0DD4454C7',
@@ -21,16 +19,6 @@ function buildHistoryUrl(request: HistoryRequest): string {
   params.set('period_id', request.period)
 
   return `${EXCHANGE_BASE_URL}/${request.leftAsset}/${request.rightAsset}/history?${params.toString()}`;
-}
-
-type HistoryPeriod = '1HRS' | '1DAY';
-
-export interface HistoryRequest {
-  leftAsset: string,
-  rightAsset: string,
-  startDate: Date,
-  endDate: Date,
-  period: HistoryPeriod,
 }
 
 export async function fetchHistory(request: HistoryRequest): Promise<any> {

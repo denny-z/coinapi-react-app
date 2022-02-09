@@ -1,6 +1,6 @@
 import { Action, Middleware } from '@reduxjs/toolkit';
 import { subscribeToMarketData } from './cryptoDashboardAPI';
-import { MarketData, Pair, setErrorToMarketData, setLoadingToMarketData, updateMarketData } from './cryptoDashboardSlice';
+import { setErrorToMarketData, setLoadingToMarketData, updateMarketData } from './cryptoDashboardSlice';
 
 export const cryptoDashboardMiddleware: Middleware<{}, any> =
   store => (next: (action: Action) => void) => (action: Action & { payload: Pair }) => {

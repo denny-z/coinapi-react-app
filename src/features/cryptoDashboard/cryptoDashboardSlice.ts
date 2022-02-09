@@ -1,27 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import formatPrice from '../../utils';
-import { fetchHistory, HistoryRequest } from './cryptoDashboardAPI';
-
-// TODO: Move these types to a separate file or make available globally.
-export interface MarketData {
-  price: number,
-  date: number,
-};
-
-export interface MarketDataFormatted {
-  price: string,
-  date: Date,
-};
-
-export interface Pair {
-  left: string,
-  right: string,
-}
+import { fetchHistory } from './cryptoDashboardAPI';
 
 type DataStatus = 'idle' | 'loading' | 'loaded' | 'error'
 
-export interface CryptoDashboardState {
+interface CryptoDashboardState {
   selectedPair: Pair | null,
   historicalData: Array<any> | null,  // TODO: Add type for this structure from API
   historicalDataStatus: DataStatus,
@@ -114,11 +98,6 @@ export const {
 export default slice.reducer;
 
 // Selectors
-
-export interface HistoricalData {
-  x: Date,
-  y: [number, number, number, number]
-}
 
 export const selectChartDataFormatted = (state: RootState): Array<HistoricalData> => {
   if (!state.cryptoDashboard.historicalData) return [];
