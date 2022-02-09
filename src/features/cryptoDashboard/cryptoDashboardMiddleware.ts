@@ -12,7 +12,7 @@ export const cryptoDashboardMiddleware: Middleware<{}, any> =
         next(action)
       } else {
         store.dispatch(setLoadingToMarketData());
-        
+
         subscribeToMarketData(
           pair,
           (m: MarketData): void => { store.dispatch(updateMarketData(m)); },

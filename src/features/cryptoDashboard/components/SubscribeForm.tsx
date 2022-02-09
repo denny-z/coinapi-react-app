@@ -12,15 +12,15 @@ const SubscribeForm = () => {
   const [helpText, setHelpText] = useState('');
 
   const dispatch = useAppDispatch();
-  
+
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (isError) return;
-    
+
     dispatch(changePairAsync(pair));
     setPair('')
   }
-  
+
 
   const handlePairChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { value } = event.target;
@@ -33,27 +33,27 @@ const SubscribeForm = () => {
     }
     setPair(value);
   };
-  
+
   return (
     <Box sx={{ width: '100%' }}>
-      <form onSubmit={onSubmit} style={{display: 'flex'}}>
-        <TextField 
-          name="crypto-pair-name" 
+      <form onSubmit={onSubmit} style={{ display: 'flex' }}>
+        <TextField
+          name="crypto-pair-name"
           onChange={handlePairChange}
           value={pair}
-          type="search" 
-          label="Search pair" 
-          placeholder="E.g. BTC/USD" 
+          type="search"
+          label="Search pair"
+          placeholder="E.g. BTC/USD"
           size="small"
-          sx={{mr: 2}}
+          sx={{ mr: 2 }}
           fullWidth
           error={isError}
           helperText={helpText}
         />
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           variant="contained"
-          style={{alignSelf: 'flex-start', marginTop: '2px'}}
+          style={{ alignSelf: 'flex-start', marginTop: '2px' }}
         >
           Subscribe
         </Button>

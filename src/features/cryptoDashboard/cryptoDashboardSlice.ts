@@ -104,11 +104,11 @@ const slice = createSlice({
   }
 });
 
-export const { 
-  changePair, 
-  updateMarketData, 
+export const {
+  changePair,
+  updateMarketData,
   setErrorToMarketData,
-   setLoadingToMarketData 
+  setLoadingToMarketData
 } = slice.actions;
 
 export default slice.reducer;
