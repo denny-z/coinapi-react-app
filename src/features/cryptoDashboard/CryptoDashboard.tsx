@@ -2,36 +2,36 @@ import React, { FormEvent, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import styles from './CryptoDashboard.module.css';
-import { useAppDispatch } from '../../app/hooks';
-import { changePairAsync } from './cryptoDashboardSlice';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { changePairAsync, selectPairString } from './cryptoDashboardSlice';
 import CandleChart from './components/CandleChart';
-
-const actualInfo = [{
-  title: 'Pair',
-  value: 'BTC/USD',
-}, {
-  title: 'Price',
-  value: '$ 48.126,233',
-}, {
-  title: 'Time',
-  value: new Date().toLocaleDateString(),
-}];
 
 export default function CryptoDashboard() {
   const [pair, setPair] = useState('');
   const dispatch = useAppDispatch();
   
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     dispatch(changePairAsync(pair));
   }
+  
+  const actualInfo = [{
+    title: 'Pair',
+    value: useAppSelector(selectPairString),
+  }, {
+    title: 'Price',
+    value: '$ 48.126,233',
+  }, {
+    title: 'Time',
+    value: new Date().toLocaleDateString(),
+  }];
   
   const actualInfoTable = (
     actualInfo.map((row) => {
       return (
         <div className={styles.actualInfoItem} key={row.title}>
           <div style={{textAlign: "center"}}>{row.title}</div>
-          <div>{row.value}</div>
+          <div>{row.value || 'N/A'}</div>
         </div>)
     })
   );

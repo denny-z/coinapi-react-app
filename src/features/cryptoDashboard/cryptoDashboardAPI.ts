@@ -20,7 +20,7 @@ export interface HistoryRequest {
   period: HistoryPeriod,
 }
 
-export function fetchHistory(request: HistoryRequest) {
+export async function fetchHistory(request: HistoryRequest) {
   const url = buildHistoryUrl(request);
 
   return fetch(url, {

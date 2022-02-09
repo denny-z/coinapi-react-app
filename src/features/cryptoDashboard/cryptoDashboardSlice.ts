@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { fetchHistory, HistoryRequest } from './cryptoDashboardAPI';
 
@@ -7,9 +7,14 @@ interface MarketData {
   date: Date,
 };
 
+interface Pair {
+  left: string,
+  right: string,
+}
+
 export interface CryptoDashboardState {
-  selectedPair: string | null,
-  chartData: Array<any> | null,  // TODO: Add type for this structure
+  selectedPair: Pair | null,
+  chartData: Array<any> | null,  // TODO: Add type for this structure from API
   marketData: MarketData | null,
 };
 
@@ -23,9 +28,12 @@ const initialState: CryptoDashboardState = {
 // TODO: Add websocket destroy and subscription.
 export const changePairAsync = createAsyncThunk(
   'cryptoDashboard/changePairAsync',
-  async (newPair: string) => {
+  async (newPair: string, { dispatch }) => {
     // TODO: Add validation to the search input.
     const [leftAsset, rightAsset] = newPair.split('/');
+    const pair: Pair = {left: leftAsset, right: rightAsset}
+    
+    dispatch(changePair(pair));
 
     // IDEA: Add selector to be able to select period. 
     //   If so, calculate start/end date to get some amount of data.
@@ -53,7 +61,11 @@ export const changePairAsync = createAsyncThunk(
 const slice = createSlice({
   name: 'cryptoDashboard',
   initialState,
-  reducers: {},
+  reducers: {
+    changePair: (state, action: PayloadAction<Pair>) => {
+      state.selectedPair = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(changePairAsync.fulfilled, (state, action) => {
@@ -61,6 +73,8 @@ const slice = createSlice({
       });
   }
 });
+
+const { changePair } = slice.actions
 
 export default slice.reducer;
 
@@ -71,7 +85,7 @@ export interface ChartData {
 
 export const selectChartDataFormatted = (state: RootState): Array<ChartData> => {
   if (!state.cryptoDashboard.chartData) return [];
-  
+
   return state.cryptoDashboard.chartData.map(
     (item) => {
       const formattedItem: ChartData = {
@@ -80,4 +94,11 @@ export const selectChartDataFormatted = (state: RootState): Array<ChartData> => 
       }
       return formattedItem;
     });
+}
+
+export const selectPairString = (state: RootState): string | null => {
+  const pair = state.cryptoDashboard.selectedPair;
+  if (!pair) return null;
+
+  return `${pair.left}/${pair.right}`;
 }
