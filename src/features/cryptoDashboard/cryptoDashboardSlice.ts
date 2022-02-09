@@ -63,8 +63,7 @@ export const changePairAsync = createAsyncThunk(
       period,
     };
 
-    const response = await fetchHistory(request);
-    return response.json();
+    return await fetchHistory(request);
   }
 );
 
@@ -92,8 +91,12 @@ const slice = createSlice({
         state.historicalDataStatus = 'loading';
       })
       .addCase(changePairAsync.fulfilled, (state, action) => {
-        state.historicalData = action.payload;
-        state.historicalDataStatus = 'loaded';
+        if (action.payload.error) {
+          state.historicalDataStatus = 'error';
+        } else {
+          state.historicalData = action.payload;
+          state.historicalDataStatus = 'loaded';
+        }
       })
       .addCase(changePairAsync.rejected, (state) => {
         state.historicalDataStatus = 'error';
