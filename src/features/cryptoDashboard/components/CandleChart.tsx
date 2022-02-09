@@ -15,6 +15,9 @@ export default function CandleChart() {
   const options = {
     xaxis: {
       type: 'datetime',
+      labels: {
+        datetimeUTC: false,
+      }
     },
     yaxis: {
       tooltip: {

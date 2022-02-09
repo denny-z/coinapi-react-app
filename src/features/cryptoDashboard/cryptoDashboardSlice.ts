@@ -105,7 +105,7 @@ export const selectChartDataFormatted = (state: RootState): Array<HistoricalData
   return state.cryptoDashboard.historicalData.map(
     (item) => {
       const formattedItem: HistoricalData = {
-        x: item.time_open,
+        x: new Date(item.time_open),
         y: [item.rate_open, item.rate_high, item.rate_low, item.rate_close],
       }
       return formattedItem;
