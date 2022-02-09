@@ -5,6 +5,7 @@ import { useAppSelector } from '../../../app/hooks';
 import { selectChartDataFormatted } from '../cryptoDashboardSlice';
 
 export default function CandleChart() {
+  // TODO: Add spinner when data is loading.
   const chartData = useAppSelector(selectChartDataFormatted);
   
   // TODO: Show a placeholder when no data provided;
@@ -22,7 +23,7 @@ export default function CandleChart() {
       },
       labels: {
         formatter: (value: number) => {
-          return value.toFixed(4);
+          return value < 1 ? value.toFixed(6) : value.toFixed(2);
         },
       },
     },
