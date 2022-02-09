@@ -40,6 +40,7 @@ export async function fetchHistory(request: HistoryRequest): Promise<any> {
     return await fetchResult.json();
   } catch (e) {
     console.error(e);
+    return { error: 'Failed to fetch' };
   }
 }
 
