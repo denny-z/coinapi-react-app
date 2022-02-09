@@ -1,7 +1,8 @@
-import { ApexOptions } from 'apexcharts';
 import React from 'react';
 import Chart from 'react-apexcharts';
+import { ApexOptions } from 'apexcharts';
 import { useAppSelector } from '../../../app/hooks';
+import formatPrice from '../../../utils';
 import { selectChartDataFormatted } from '../cryptoDashboardSlice';
 
 export default function CandleChart() {
@@ -22,9 +23,7 @@ export default function CandleChart() {
         enabled: true,
       },
       labels: {
-        formatter: (value: number) => {
-          return value < 1 ? value.toFixed(6) : value.toFixed(2);
-        },
+        formatter: formatPrice,
       },
     },
   } as ApexOptions;  

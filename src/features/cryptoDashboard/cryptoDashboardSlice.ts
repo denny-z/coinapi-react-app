@@ -1,13 +1,19 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
-import { fetchHistory, HistoryRequest } from './cryptoDashboardAPI';
+import formatPrice from '../../utils';
+import { fetchHistory, HistoryRequest, subscribeToMarketData } from './cryptoDashboardAPI';
 
-interface MarketData {
+export interface MarketData {
   price: number,
+  date: number,
+};
+
+export interface MarketDataFormatted {
+  price: string,
   date: Date,
 };
 
-interface Pair {
+export interface Pair {
   left: string,
   right: string,
 }
@@ -31,8 +37,8 @@ export const changePairAsync = createAsyncThunk(
   async (newPair: string, { dispatch }) => {
     // TODO: Add validation to the search input.
     const [leftAsset, rightAsset] = newPair.split('/');
-    const pair: Pair = {left: leftAsset, right: rightAsset}
-    
+    const pair: Pair = { left: leftAsset, right: rightAsset }
+
     dispatch(changePair(pair));
 
     // IDEA: Add selector to be able to select period. 
@@ -56,7 +62,7 @@ export const changePairAsync = createAsyncThunk(
     const response = await fetchHistory(request);
     return response.json();
   }
-)
+);
 
 const slice = createSlice({
   name: 'cryptoDashboard',
@@ -65,16 +71,23 @@ const slice = createSlice({
     changePair: (state, action: PayloadAction<Pair>) => {
       state.selectedPair = action.payload;
     },
+    updateMarketData: (state, action: PayloadAction<MarketData>) => {
+      state.marketData = action.payload
+    }
   },
   extraReducers: (builder) => {
     builder
       .addCase(changePairAsync.fulfilled, (state, action) => {
         state.chartData = action.payload;
+
+        subscribeToMarketData(
+          { ...state.selectedPair } as Pair,
+        );
       });
   }
 });
 
-const { changePair } = slice.actions
+export const { changePair, updateMarketData } = slice.actions
 
 export default slice.reducer;
 
@@ -101,4 +114,14 @@ export const selectPairString = (state: RootState): string | null => {
   if (!pair) return null;
 
   return `${pair.left}/${pair.right}`;
+}
+
+export const selectMarketDataFormatted = (state: RootState): MarketDataFormatted | null => {
+  const data = state.cryptoDashboard.marketData;
+  if (!data) return null;
+
+  return {
+    price: formatPrice(data.price),
+    date: new Date(data.date),
+  } as MarketDataFormatted;
 }

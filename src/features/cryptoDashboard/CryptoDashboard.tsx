@@ -1,9 +1,9 @@
-import React, { FormEvent, useState } from 'react';
+import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import styles from './CryptoDashboard.module.css';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { changePairAsync, selectPairString } from './cryptoDashboardSlice';
+import { changePairAsync, selectMarketDataFormatted, selectPairString } from './cryptoDashboardSlice';
 import CandleChart from './components/CandleChart';
 
 export default function CryptoDashboard() {
@@ -15,15 +15,21 @@ export default function CryptoDashboard() {
     dispatch(changePairAsync(pair));
   }
   
+  const marketData = useAppSelector(selectMarketDataFormatted);
+  
+  const formatDateToDateAndTime = (date: Date): string => (
+    `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
+  )
+  
   const actualInfo = [{
     title: 'Pair',
     value: useAppSelector(selectPairString),
   }, {
     title: 'Price',
-    value: '$ 48.126,233',
+    value: marketData?.price || 'N/A',
   }, {
     title: 'Time',
-    value: new Date().toLocaleDateString(),
+    value: marketData?.date ? formatDateToDateAndTime(marketData.date) : 'N/A',
   }];
   
   const actualInfoTable = (
