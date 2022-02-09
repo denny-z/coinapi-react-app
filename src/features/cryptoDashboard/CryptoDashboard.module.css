@@ -7,27 +7,21 @@
   display: flex;
 }
 
-.subscribeForm {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.actualInfoContainer {
+.marketDataContainer {
   display: flex;
   flex-direction: column;
 }
 
-.actualInfoTable {
+.marketDataTable {
   display: flex;
   justify-content: space-around;
   align-items: center;
 }
 
-.actualInfoItem {
+.marketDataItem {
   display: flex;
   flex-direction: column;
+  text-align: center;
 }
 
 .chart {
