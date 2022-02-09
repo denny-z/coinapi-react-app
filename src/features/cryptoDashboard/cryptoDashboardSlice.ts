@@ -6,7 +6,7 @@ import { fetchHistory } from './cryptoDashboardAPI';
 type DataStatus = 'idle' | 'loading' | 'loaded' | 'error'
 
 interface CryptoDashboardState {
-  selectedPair: Pair | null,
+  selectedPair: Pair | undefined,
   historicalData: Array<any> | null,  // TODO: Add type for this structure from API
   historicalDataStatus: DataStatus,
   marketData: MarketData | null,
@@ -14,7 +14,7 @@ interface CryptoDashboardState {
 };
 
 const initialState: CryptoDashboardState = {
-  selectedPair: null,
+  selectedPair: undefined,
   historicalData: null,
   historicalDataStatus: 'idle',
   marketData: null,
@@ -57,6 +57,7 @@ const slice = createSlice({
   reducers: {
     changePair: (state, action: PayloadAction<Pair>) => {
       state.selectedPair = action.payload;
+      state.marketData = null;
     },
     updateMarketData: (state, action: PayloadAction<MarketData>) => {
       state.marketData = action.payload;
@@ -121,10 +122,11 @@ export const selectPairString = (state: RootState): string | null => {
 
 export const selectMarketDataFormatted = (state: RootState): MarketDataFormatted | null => {
   const data = state.cryptoDashboard.marketData;
+  const pair = state.cryptoDashboard.selectedPair;
   if (!data) return null;
 
   return {
-    price: formatPrice(data.price),
+    price: formatPrice(data.price, pair),
     date: new Date(data.date),
   } as MarketDataFormatted;
 }
