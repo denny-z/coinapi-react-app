@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import formatPrice from '../../utils';
-import { fetchHistory, HistoryRequest, subscribeToMarketData } from './cryptoDashboardAPI';
+import { fetchHistory, HistoryRequest } from './cryptoDashboardAPI';
 
 export interface MarketData {
   price: number,
@@ -79,10 +79,6 @@ const slice = createSlice({
     builder
       .addCase(changePairAsync.fulfilled, (state, action) => {
         state.chartData = action.payload;
-
-        subscribeToMarketData(
-          { ...state.selectedPair } as Pair,
-        );
       });
   }
 });

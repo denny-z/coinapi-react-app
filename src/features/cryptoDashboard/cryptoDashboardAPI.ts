@@ -1,4 +1,4 @@
-import { MarketData, Pair, updateMarketData } from './cryptoDashboardSlice';
+import { MarketData, Pair } from './cryptoDashboardSlice';
 
 // TODO: Move the constants to env file.
 const EXCHANGE_BASE_URL = 'https://rest.coinapi.io/v1/exchangerate';
@@ -51,16 +51,18 @@ function prepareWsHelloMessage(pair: Pair) {
   }
 }
 
-export function subscribeToMarketData(pair: Pair): void {
+export function subscribeToMarketData(pair: Pair, onUpdate: (m: MarketData) => void): void {
   if (exchangeSocket) {
     exchangeSocket.close();
   }
 
   const socket = new WebSocket(EXCHANGE_WS_URL);
+
   socket.onopen = () => {
     const helloMessage = prepareWsHelloMessage(pair);
     socket.send(JSON.stringify(helloMessage));
   };
+
   // TODO: Add websocket event type. See gist: https://gist.github.com/QuadFlask/a8d50095dea9cfa3f056c07b796e7c95#file-websocket-d-ts-L63
   socket.onmessage = (event: any) => {
     const data = JSON.parse(event.data.toString());
@@ -68,9 +70,7 @@ export function subscribeToMarketData(pair: Pair): void {
       price: data.rate,
       date: data.time,
     };
-    // TODO: Fix circular dependency issue
-    const { store } = require('../../app/store');
-    store.dispatch(updateMarketData(marketData));
+    onUpdate(marketData);
   };
   
   exchangeSocket = socket;
