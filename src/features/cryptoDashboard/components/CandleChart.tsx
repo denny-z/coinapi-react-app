@@ -3,21 +3,19 @@ import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { useAppSelector } from '../../../app/hooks';
 import formatPrice from '../../../utils';
-import { selectChartDataFormatted } from '../cryptoDashboardSlice';
+import { selectChartDataFormatted, selectHistoryDataStatus } from '../cryptoDashboardSlice';
+import { CircularProgress } from '@mui/material';
 
 export default function CandleChart() {
-  // TODO: Add spinner when data is loading.
   const chartData = useAppSelector(selectChartDataFormatted);
-  
-  // TODO: Show a placeholder when no data provided;
-  if (chartData.length === 0) return null;
-  
-  const series = [{data: chartData}];
+  const historyDataStatus = useAppSelector(selectHistoryDataStatus);
+
+  const series = [{ data: chartData }];
 
   const options = {
     xaxis: {
       type: 'datetime',
-    }, 
+    },
     yaxis: {
       tooltip: {
         enabled: true,
@@ -26,13 +24,32 @@ export default function CandleChart() {
         formatter: formatPrice,
       },
     },
-  } as ApexOptions;  
-  
+  } as ApexOptions;
+
+  const chart = chartData.length === 0
+    ? null
+    : <Chart series={series} options={options} type="candlestick" />
+
+  let status;
+
+  switch (historyDataStatus) {
+    case 'idle':
+      status = (<h4>No data yet. Try to subscribe to see the chart.</h4>);
+      break;
+    case 'loading':
+      status = (<CircularProgress />)
+      break;
+    case 'error':
+      status = (<h4>Sorry, something went wrong...</h4>)
+      break;
+  }
+
   return (
-    <Chart 
-      series={series}
-      options={options}
-      type="candlestick"
-    />
+    <>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {status}
+      </div>
+      {chart}
+    </>
   );
 }

@@ -2,7 +2,7 @@ import { MarketData, Pair } from './cryptoDashboardSlice';
 
 // TODO: Move the constants to env file.
 const EXCHANGE_BASE_URL = 'https://rest.coinapi.io/v1/exchangerate';
-const API_KEY = 'C00C804D-6A34-4DDB-B59D-2884162714FD';
+const API_KEY = '3CFD5F1E-EDAF-4F44-9F87-E9E0DD4454C7';
 const EXCHANGE_WS_URL = 'wss://ws-sandbox.coinapi.io/v1/';
 
 function buildHistoryUrl(request: HistoryRequest): string {
@@ -51,7 +51,11 @@ function prepareWsHelloMessage(pair: Pair) {
   }
 }
 
-export function subscribeToMarketData(pair: Pair, onUpdate: (m: MarketData) => void): void {
+export function subscribeToMarketData(
+  pair: Pair, 
+  onUpdate: (m: MarketData) => void, 
+  onError: () => void
+): void {
   if (exchangeSocket) {
     exchangeSocket.close();
   }
@@ -72,6 +76,10 @@ export function subscribeToMarketData(pair: Pair, onUpdate: (m: MarketData) => v
     };
     onUpdate(marketData);
   };
+  
+  socket.onerror = (event: any) => {
+    onError();
+  }
   
   exchangeSocket = socket;
 }
