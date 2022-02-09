@@ -4,7 +4,7 @@ import CryptoDashboard from './features/cryptoDashboard/CryptoDashboard';
 
 function App() {
   return (
-    <div>
+    <div className="app">
       <CryptoDashboard />
     </div>
   );

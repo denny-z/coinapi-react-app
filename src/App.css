@@ -1,0 +1,15 @@
+.app {
+  margin: 10px auto;
+}
+
+@media (max-width: 769px) {
+  .app {
+    width: 95%;
+  }
+}
+
+@media (min-width: 769px) {
+  .app {
+    max-width: 60%;
+  }
+}

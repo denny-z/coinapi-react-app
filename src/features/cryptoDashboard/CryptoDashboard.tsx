@@ -5,7 +5,7 @@ import SubscribeForm from './components/SubscribeForm';
 
 export default function CryptoDashboard() {
   return (
-    <div className={styles.cryptoDashboard}>
+    <>
       <SubscribeForm />
 
       <div className={styles.marketDataContainer}>
@@ -16,6 +16,6 @@ export default function CryptoDashboard() {
         <h2>Historical exchange reates</h2>
         <CandleChart />
       </div>
-    </div>
+    </>
   )
 };
