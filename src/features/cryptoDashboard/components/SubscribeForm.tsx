@@ -4,34 +4,35 @@ import React, { useState } from 'react';
 import { useAppDispatch } from '../../../app/hooks';
 import { changePairAsync } from '../cryptoDashboardSlice';
 
-const PAIR_REGEX = /\w{1,}\/\w{1,}/
+const PAIR_REGEX = /\w{1,}\/\w{1,}/;
+const HELP_TEXT_DEFAULT = 'Use slash to separate assets.';
 
 const SubscribeForm = () => {
   const [pair, setPair] = useState('');
   const [isError, setIsError] = useState(false);
-  const [helpText, setHelpText] = useState('');
+  const [helpText, setHelpText] = useState(HELP_TEXT_DEFAULT);
 
   const dispatch = useAppDispatch();
 
+  // IDEA: Use "List all assets" to check if it's valid pair.
   const onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (isError) return;
+    if (isError || pair.length === 0) return;
 
     dispatch(changePairAsync(pair));
     setPair('')
   }
 
-
   const handlePairChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { value } = event.target;
     if (value.length === 0 || PAIR_REGEX.test(value)) {
       setIsError(false);
-      setHelpText('');
+      setHelpText(HELP_TEXT_DEFAULT);
     } else {
       setIsError(true);
       setHelpText('Please enter a valid pair.');
     }
-    setPair(value);
+    setPair(value.toUpperCase());
   };
 
   return (
